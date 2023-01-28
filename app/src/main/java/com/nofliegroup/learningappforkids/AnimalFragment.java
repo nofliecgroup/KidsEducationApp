@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 
 public class AnimalFragment extends Fragment {
-    int animal[] = {R.drawable.lion, R.drawable.tiger, R.drawable.chicken, R.drawable.elephant};
+    int animal[] = {R.drawable.lion, R.drawable.tiger, R.drawable.elephant, R.drawable.horse, R.drawable.giraffe};
 
     public AnimalFragment() {
         // Required empty public constructor

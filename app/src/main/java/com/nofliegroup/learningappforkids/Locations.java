@@ -1,9 +1,16 @@
 package com.nofliegroup.learningappforkids;
 
+
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +23,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 public class Locations extends Fragment {
+    private GoogleMap mMap;
+    private LocationListener locationListener;
+    private LocationManager locationManager;
+    private final long MIN_TIME = 1000;
+    private final long MIN_DIST = 5;
+    private LatLng latLng;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -31,18 +46,86 @@ public class Locations extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
+            mMap = googleMap;
             LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+            locationListener = new LocationListener() {
+
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    try {
+                        latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                         mMap.addMarker(new MarkerOptions().position(latLng).title("My position"));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    }
+                    catch (SecurityException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void onLocationChanged(@NonNull List<Location> locations) {
+                    LocationListener.super.onLocationChanged(locations);
+                }
+
+                @Override
+                public void onFlushComplete(int requestCode) {
+                    LocationListener.super.onFlushComplete(requestCode);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                    LocationListener.super.onStatusChanged(provider, status, extras);
+                }
+
+                @Override
+                public void onProviderEnabled(@NonNull String provider) {
+                    LocationListener.super.onProviderEnabled(provider);
+                }
+
+                @Override
+                public void onProviderDisabled(@NonNull String provider) {
+                    LocationListener.super.onProviderDisabled(provider);
+                }
+            };
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                locationManager = (LocationManager) getSystemService(getContext().LOCATION_SERVICE);
+            }
+            try {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+            } catch (SecurityException e) {
+                e.printStackTrace();
+
+            }
+        } // end of onMapReady
+    }; // end of callback
+
+    private Object getSystemService(String locationService) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return getContext().getSystemService(locationService);
+        } else {
+            return null;
         }
-    };
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_locations, container, false);
+        View v = inflater.inflate(R.layout.fragment_locations, container, false);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+
+
+
+
+        return v;
+
     }
 
     @Override

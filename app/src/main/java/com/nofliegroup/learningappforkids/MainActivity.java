@@ -11,7 +11,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class MainActivity extends AppCompatActivity {
 
 
-    String[] tabTitle = {"Alphabet", "Animals", "Fruits"};
+    String[] tabTitle = {"Alphabet", "Animals", "Fruits", "Locations"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

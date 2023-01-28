@@ -22,13 +22,15 @@ class MyAdapter extends FragmentStateAdapter {
                 return new AnimalFragment();
             case 2:
                 return new FruitsFragment();
+            case 3:
+                return new Locations();
 
         }
         return new AlphabetFragment();
     }
         @Override
         public int getItemCount () {
-            return 3;
+            return 4;
         }
 
 }
